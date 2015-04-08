@@ -236,7 +236,7 @@ begin
 
 
       puts $main_mark + "Whois".title + "#{options[:domain]}"
-      # puts @dnsenum.whois
+      puts @dnsenum.whois
 
       puts ""
       puts $main_mark + "Forward lookup".title
