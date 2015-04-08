@@ -65,7 +65,6 @@ class DNSEnumSuite
   def initialize(domain)
     @domain = domain
     @packet = Net::DNS::Resolver.start(domain, Net::DNS::ANY)
-    @lists = ["1-100", "a-z", "a1-z9", "aa-zz", "aaa-zzz", "aaaa-zzzz", "aaaaa-zzzzz"]
     @nameservers = nameservers
     @whois = Whois::Client.new.lookup(domain)
     @datastore = []
@@ -92,7 +91,7 @@ class DNSEnumSuite
     packet = Net::DNS::Resolver.start(ip, Net::DNS::PTR)
     packet.each_ptr {|ptr| ptrs << ptr.delete(" ")}
 
-    return {ip => ptrs}.sort
+    return {ip => ptrs}
   end
 
   def nameservers
@@ -109,8 +108,6 @@ class DNSEnumSuite
   #
   def mx
     mx = {}
-
-    # mx.each_mx {|v, mx| p mx}
     @packet.each_mx do |v, mxname|
       Net::DNS::Resolver.start(mxname).each_address {|ip| mx[mxname] = ip.to_s}
     end
@@ -186,6 +183,7 @@ begin
     opts.on('-d', '--domain DOMAIN', 'Domain to enumerate.') { |v| options[:domain] = v }
     opts.on('-n', '--nameserver [NAMESERVER]', 'Name server to use due enumeration. Use domain\'s related nameserver for better result ') { |v| options[:nameserver] = v }
     opts.on('-w', '--wordlist [WORDLIST_FILE]', 'Use wordlist file to enumerate the given domain') { |v| options[:wordlist] = v }
+    opts.on('-a', '--aggressive', 'Aggressive Bruteforce.') { |v| options[:aggressive] = v } # TODO: make aggressive with level chosen
     opts.on('-v', '--version', 'Current version.') { |v| options[:domain] = v }
 
     #--> Help screen
@@ -217,18 +215,18 @@ begin
       # else
       #   type = options[:type]
       # end
-      puts "Domainnn".red
-      puts "Domainnn".blue
-      puts "Domainnn".dark_blue
-      puts "Domainnn".green
-      puts "Domainnn".dark_green
-      puts "Domainnn".yellow
-      puts "Domainnn".bold
-      puts "Domainnn".purple
-      puts "Domainnn".dark_purple
-      puts "Domainnn".cyan
-      puts "Domainnn".dark_cyan
-      puts "Domainnn\n\n"
+      # puts "Domainnn".red
+      # puts "Domainnn".blue
+      # puts "Domainnn".dark_blue
+      # puts "Domainnn".green
+      # puts "Domainnn".dark_green
+      # puts "Domainnn".yellow
+      # puts "Domainnn".bold
+      # puts "Domainnn".purple
+      # puts "Domainnn".dark_purple
+      # puts "Domainnn".cyan
+      # puts "Domainnn".dark_cyan
+      # puts "Domainnn\n\n"
 
 
 
@@ -262,43 +260,91 @@ begin
         puts @dnsenum.zone_transfer
       end
 
+      #
+      # Enable wordlist
+      #
+      if options[:wordlist]
+        puts ""
+        wordlist = File.readlines options[:wordlist]
+        puts $main_mark + "DNS Bruteforce - wordlist (#{wordlist.size} words)".title + "#{options[:domain]}"
+        puts "\nIP Address".ljust(21) + "Domain".ljust(30) + "Country"
+        puts "-" * 70
 
-      puts ""
-      wordlist = File.readlines options[:wordlist]
-      puts $main_mark + "DNS Bruteforce - wordlist (#{wordlist.size} words)".title + "#{options[:domain]}"
-      puts "\nIP Address".ljust(21) + "Domain"
-      puts "-" * 38
-
-
-      wordlist.each do |sub|
+        wordlist.each do |sub|
           fqdn = "#{sub.chomp!}.#{@dnsenum.domain}"
           print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
 
           unless @dnsenum.lookup(fqdn).empty?
-            # puts "#{@dnsenum.lookup(fqdn).first}        " + "#{fqdn}"
-            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}"
+            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
           end
 
           print  ("\e[K")
+        end
+      end
+
+
+      if options[:aggressive]
+
+        puts ""
+        puts $main_mark + "DNS Bruteforce - Aggressive (Level #1)".title + "From aaa To zzz"
+        @dnsenum.gen_list("aaa-zzzz").each do |sub|
+          fqdn = "#{sub}.#{@dnsenum.domain}"
+          print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
+
+          unless @dnsenum.lookup(fqdn).empty?
+            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
+          end
+
+          print  ("\e[K")
+        end
+
+
+
+        puts ""
+        puts $main_mark + "DNS Bruteforce - Aggressive (Level #2)".title + "From aaaa To zzzz"
+        @dnsenum.gen_list("aaaa-zzzz").each do |sub|
+          fqdn = "#{sub}.#{@dnsenum.domain}"
+          print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
+
+          unless @dnsenum.lookup(fqdn).empty?
+            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
+          end
+
+          print  ("\e[K")
+        end
+
+
+
+        puts ""
+        puts $main_mark + "DNS Bruteforce - Aggressive (Level #2)".title + "From aaaaa To zzzzz"
+        @dnsenum.gen_list("aaaaa-zzzzz").each do |sub|
+          fqdn = "#{sub}.#{@dnsenum.domain}"
+          print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
+
+          unless @dnsenum.lookup(fqdn).empty?
+            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
+          end
+
+          print  ("\e[K")
+        end
+
       end
 
 
       puts ""
-      puts $main_mark + "DNS Bruteforce - Aggressive".title + "#{options[:domain]}"
-      # @dnsenum.gen_list("maa-mqq").each do |sub|
-      #   fqdn = "#{sub}.#{domain}"
-      #   print "[+] Bruteforcing #{fqdn}" + "\r"
-      #
-      #   unless @dnsenum.lookup(fqdn).empty?
-      #     puts "#{fqdn}: #{@dnsenum.lookup(fqdn)}"
-      #   end
-      #
-      #   print  ("\e[K")
-      # end
+      puts $main_mark + "Reverse Lookup".title + "#{options[:domain]}"
 
+      @dnsenum.ip_range("").each do |ip|
+        print "Bruteforcing ".purple + " #{ip}" + "\r"
 
-      puts ""
-      puts $main_mark + "TTTTTT".title + "#{options[:domain]}"
+        p @dnsenum.reverse_lookup(ip)
+        unless @dnsenum.reverse_lookup(ip).empty?
+          puts "#{ip}".ljust(20) + "#{@dnsenum.reverse_lookup(ip)}"
+        end
+
+        print  ("\e[K")
+      end
+
 
       puts ""
       puts $main_mark + "TTTTTT".title + "#{options[:domain]}"
@@ -308,10 +354,6 @@ begin
 
 
 
-
-
-    # when options[:offset]
-    #   offset[:offset].each {|o| puts "#{o}".light_cyan}
     else
       puts "#{optparse}"
   end
