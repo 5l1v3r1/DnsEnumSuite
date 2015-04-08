@@ -236,19 +236,19 @@ begin
       puts ""
       puts $main_mark + "Forward lookup".title
       @dnsenum.lookup.each do |ip|
-        puts "#{@dnsenum.domain}\t" + "#{ip}"
+        puts "#{@dnsenum.domain}".ljust(30) + "#{ip}"
       end
 
       puts ""
       puts $main_mark + "Name Servers".title
       @dnsenum.nameservers.each do |k, v|
-        puts "#{k}\t" + "#{v}"
+        puts "#{k}".ljust(30) + "#{v}"
       end
 
       puts ""
       puts $main_mark + "Mail Servers".title + "#{options[:domain]}"
       @dnsenum.mx.each do |k, v|
-        puts "#{k}\t" + "#{v}"
+        puts "#{k}".ljust(30) + "#{v}"
       end
 
 
@@ -300,58 +300,58 @@ begin
 
 
 
-        puts ""
-        puts $main_mark + "DNS Bruteforce - Aggressive (Level #2)".title + "From aaaa To zzzz"
-        @dnsenum.gen_list("aaaa-zzzz").each do |sub|
-          fqdn = "#{sub}.#{@dnsenum.domain}"
-          print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
-
-          unless @dnsenum.lookup(fqdn).empty?
-            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
-          end
-
-          print  ("\e[K")
-        end
-
-
-
-        puts ""
-        puts $main_mark + "DNS Bruteforce - Aggressive (Level #2)".title + "From aaaaa To zzzzz"
-        @dnsenum.gen_list("aaaaa-zzzzz").each do |sub|
-          fqdn = "#{sub}.#{@dnsenum.domain}"
-          print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
-
-          unless @dnsenum.lookup(fqdn).empty?
-            puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
-          end
-
-          print  ("\e[K")
-        end
+        # puts ""
+        # puts $main_mark + "DNS Bruteforce - Aggressive (Level #2)".title + "From aaaa To zzzz"
+        # @dnsenum.gen_list("aaaa-zzzz").each do |sub|
+        #   fqdn = "#{sub}.#{@dnsenum.domain}"
+        #   print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
+        #
+        #   unless @dnsenum.lookup(fqdn).empty?
+        #     puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
+        #   end
+        #
+        #   print  ("\e[K")
+        # end
+        #
+        #
+        #
+        # puts ""
+        # puts $main_mark + "DNS Bruteforce - Aggressive (Level #2)".title + "From aaaaa To zzzzz"
+        # @dnsenum.gen_list("aaaaa-zzzzz").each do |sub|
+        #   fqdn = "#{sub}.#{@dnsenum.domain}"
+        #   print "Bruteforcing ".purple + " #{sub}.#{@dnsenum.domain}" + "\r"
+        #
+        #   unless @dnsenum.lookup(fqdn).empty?
+        #     puts "#{@dnsenum.lookup(fqdn).first}".ljust(20) + "#{fqdn}".ljust(30) + "#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["city"]}/#{@dnsenum.geoip(@dnsenum.lookup(fqdn).first)["country"]}"
+        #   end
+        #
+        #   print  ("\e[K")
+        # end
 
       end
 
 
+      # puts ""
+      # puts $main_mark + "Reverse Lookup".title + "#{options[:domain]}"
+      #
+      # @dnsenum.ip_range("").each do |ip|
+      #   print "Bruteforcing ".purple + " #{ip}" + "\r"
+      #
+      #   p @dnsenum.reverse_lookup(ip)
+      #   unless @dnsenum.reverse_lookup(ip).empty?
+      #     puts "#{ip}".ljust(20) + "#{@dnsenum.reverse_lookup(ip)}"
+      #   end
+      #
+      #   print  ("\e[K")
+      # end
+
+
       puts ""
-      puts $main_mark + "Reverse Lookup".title + "#{options[:domain]}"
-
-      @dnsenum.ip_range("").each do |ip|
-        print "Bruteforcing ".purple + " #{ip}" + "\r"
-
-        p @dnsenum.reverse_lookup(ip)
-        unless @dnsenum.reverse_lookup(ip).empty?
-          puts "#{ip}".ljust(20) + "#{@dnsenum.reverse_lookup(ip)}"
-        end
-
-        print  ("\e[K")
-      end
-
-
-      puts ""
-      puts $main_mark + "TTTTTT".title + "#{options[:domain]}"
+      # puts $main_mark + "TTTTTT".title + "#{options[:domain]}"
 
       puts ""
       puts $main_mark + "Final Report".title + "#{options[:domain]}"
-
+      puts "TO BE IMPLEMENTED"
 
 
     else
