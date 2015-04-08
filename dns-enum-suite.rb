@@ -15,12 +15,17 @@
 # - GeoIP of each IP (http://ip-api.com/docs/dns , http://ip-api.com/docs/)
 # -
 #
+begin
+  require 'optparse'
+  require 'net/dns'
+  require 'whois'
+  require 'net/http'
+  require 'json'
+rescue
+  puts "[!] Missing gems:"
+  puts "[+] gem install net-dns whois"
+end
 
-require 'optparse'
-require 'net/dns'
-require 'whois'
-require 'net/http'
-require 'json'
 
 class String
   def red; colorize(self, "\e[1m\e[31m"); end
