@@ -1,0 +1,14 @@
+
+### Ignore files
+# Wordlist
+file_4
+file_5
+file_more
+/full/
+
+# Testing files
+fierce
+dnsenum.rb
+test.rb
+Todo.txt
+
